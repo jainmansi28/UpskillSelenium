@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeClass;
@@ -14,19 +15,23 @@ import org.testng.annotations.Test;
 import com.training.generics.ScreenShot;
 import com.training.pom.TC1_AdminLogin;
 import com.training.pom.TC1_Dashboard;
-import com.training.pom.TC2_Categories;
+import com.training.pom.TC4_ProdDel;
 import com.training.pom.TC3_Product;
+import com.training.pom.TC5_SalesReport;
+import com.training.pom.TC6_ProductOperations;
 import com.training.utility.DriverFactory;
 import com.training.utility.DriverNames;
 
-public class TC3_ProductFilter {
+public class TC9_MultiProdDel {
 	
 	private WebDriver driver;
 	private String baseUrl;
 	private TC1_AdminLogin TC1_AdminLogin;
 	private TC1_Dashboard TC1_Dashboard;
-	private TC2_Categories TC2_Categories;
+	private TC4_ProdDel TC4_ProdDel;
 	private TC3_Product TC3_Product;
+	private TC5_SalesReport TC5_SalesReport;
+	private TC6_ProductOperations TC6_ProductOperations;
 	private static Properties properties;
 	private ScreenShot screenShot;
 	
@@ -46,8 +51,10 @@ public class TC3_ProductFilter {
 			driver = DriverFactory.getDriver(DriverNames.FIREFOX);
 			TC1_AdminLogin = new TC1_AdminLogin(driver); 
 			TC1_Dashboard = new TC1_Dashboard(driver); 
-			TC2_Categories =new TC2_Categories(driver);
 			TC3_Product =new TC3_Product(driver);
+			TC4_ProdDel =new TC4_ProdDel(driver);
+			TC5_SalesReport =new TC5_SalesReport(driver);
+			TC6_ProductOperations=new TC6_ProductOperations(driver);
 			baseUrl = properties.getProperty("baseURL");
 			screenShot = new ScreenShot(driver); 
 			// open the browser 
@@ -65,17 +72,41 @@ public class TC3_ProductFilter {
 		TC1_AdminLogin.sendUser("admin");
 		TC1_AdminLogin.sendPass("admin@123");
 		TC1_AdminLogin.clickAdminLoginBtn(); 
-		screenShot.captureScreenShot("TC6_1");
-		Thread.sleep(2000);
-		TC1_Dashboard.clickcatalog();
+		screenShot.captureScreenShot("TC4_1");
+		TC5_SalesReport.mainmenu();
+		System.out.println("Click on Product Menu");
+		TC6_ProductOperations.catalogmenu();
+		TC6_ProductOperations.productmenu();
+		String output=TC4_ProdDel.enterProductName("Red T shirt");
+		String expec="Matched";
+		Assert.assertEquals(output,expec);
+		System.out.println("Element found :Continue to select another");
+		screenShot.captureScreenShot("TC4_3");
+		String output1=TC4_ProdDel.enterProductName("sports wear");
+		String expec1="Matched";
+		Assert.assertEquals(output1,expec1);
+		System.out.println("Element found :Continue to select another");
+		screenShot.captureScreenShot("TC4_3");
 		Thread.sleep(5000);
-		screenShot.captureScreenShot("TC3_2");
-		TC3_Product.clickproduct();
-		TC3_Product.enterProductName("Shirt");
-		TC3_Product.filterbutton();
-	    screenShot.captureScreenShot("TC3_3");
+		TC4_ProdDel.clickdelbutton();
+		screenShot.captureScreenShot("TC4_2");
+		TC4_ProdDel.alertwindow1();
+		Thread.sleep(5000);
+		try
+		{
+		String actual=TC4_ProdDel.sucessmessage1();
+		System.out.println("Actual is   "+actual);
+		String Expected="Success:";
+		Assert.assertEquals(actual,Expected);
+		System.out.println("Test passed");
+	    screenShot.captureScreenShot("TC4_4");
+		}
+		catch(Error e)
+		{
+			System.out.println("Unable to delete an entry");
+		}
 		
-	}	
+				}	
 		
 	}
 

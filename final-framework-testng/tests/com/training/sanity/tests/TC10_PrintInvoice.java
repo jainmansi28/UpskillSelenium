@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeClass;
@@ -13,20 +14,16 @@ import org.testng.annotations.Test;
 
 import com.training.generics.ScreenShot;
 import com.training.pom.TC1_AdminLogin;
-import com.training.pom.TC1_Dashboard;
-import com.training.pom.TC2_Categories;
-import com.training.pom.TC3_Product;
+import com.training.pom.CartPage;
 import com.training.utility.DriverFactory;
 import com.training.utility.DriverNames;
 
-public class TC3_ProductFilter {
+public class TC10_PrintInvoice {
 	
 	private WebDriver driver;
 	private String baseUrl;
 	private TC1_AdminLogin TC1_AdminLogin;
-	private TC1_Dashboard TC1_Dashboard;
-	private TC2_Categories TC2_Categories;
-	private TC3_Product TC3_Product;
+	private CartPage CartPage;
 	private static Properties properties;
 	private ScreenShot screenShot;
 	
@@ -42,12 +39,10 @@ public class TC3_ProductFilter {
 	@BeforeMethod
 	public void setUp() throws Exception {
 	     	System.out.println("Executing Before Method");
-			//driver = DriverFactory.getDriver(DriverNames.CHROME);
-			driver = DriverFactory.getDriver(DriverNames.FIREFOX);
+			driver = DriverFactory.getDriver(DriverNames.CHROME);
+			//driver = DriverFactory.getDriver(DriverNames.FIREFOX);
 			TC1_AdminLogin = new TC1_AdminLogin(driver); 
-			TC1_Dashboard = new TC1_Dashboard(driver); 
-			TC2_Categories =new TC2_Categories(driver);
-			TC3_Product =new TC3_Product(driver);
+			CartPage = new CartPage(driver); 
 			baseUrl = properties.getProperty("baseURL");
 			screenShot = new ScreenShot(driver); 
 			// open the browser 
@@ -65,20 +60,35 @@ public class TC3_ProductFilter {
 		TC1_AdminLogin.sendUser("admin");
 		TC1_AdminLogin.sendPass("admin@123");
 		TC1_AdminLogin.clickAdminLoginBtn(); 
-		screenShot.captureScreenShot("TC6_1");
+		screenShot.captureScreenShot("TC4_1");
+	    Thread.sleep(2000);
+		CartPage.clickcart();
+		CartPage.clickorder();
+		CartPage.clickpage2();
+		CartPage.clickview();
+		CartPage.clickprint();
+		CartPage.switchwindow();
+		try
+		{
+		String actual=CartPage.printinvoice();
+		System.out.println("Print the value "+actual);
+		String Expected="Invoice";
+		boolean assertcheck=actual.contains(Expected);
+		Assert.assertTrue(assertcheck);
+		System.out.println("Test passed");
+	    screenShot.captureScreenShot();
+		}
+		catch(Error e)
+		{
+			System.out.println("Test Failed to get the invoice number");
+		}
 		Thread.sleep(2000);
-		TC1_Dashboard.clickcatalog();
+		CartPage.switchback();// going back to the parent window  
 		Thread.sleep(5000);
-		screenShot.captureScreenShot("TC3_2");
-		TC3_Product.clickproduct();
-		TC3_Product.enterProductName("Shirt");
-		TC3_Product.filterbutton();
-	    screenShot.captureScreenShot("TC3_3");
-		
-	}	
-		
+		CartPage.uniform();
+		Thread.sleep(5000);
 	}
-
+}
 	
 	
 		

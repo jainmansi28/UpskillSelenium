@@ -4,31 +4,42 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.training.generics.ScreenShot;
+import com.relevantcodes.extentreports.LogStatus;
+import com.training.generics.ExternReport;
 import com.training.pom.TC1_AdminLogin;
 import com.training.pom.TC1_Dashboard;
-import com.training.pom.TC2_Categories;
+import com.training.pom.TC6_ProductOperations;
 import com.training.pom.TC3_Product;
+import com.training.pom.TC5_SalesReport;
+import com.training.pom.TC7_AddProduct;
+import com.training.pom.EditProduct;
 import com.training.utility.DriverFactory;
 import com.training.utility.DriverNames;
 
-public class TC3_ProductFilter {
+public class TC8_ProductEdit {
 	
 	private WebDriver driver;
 	private String baseUrl;
 	private TC1_AdminLogin TC1_AdminLogin;
 	private TC1_Dashboard TC1_Dashboard;
-	private TC2_Categories TC2_Categories;
 	private TC3_Product TC3_Product;
+	private TC6_ProductOperations TC6_ProductOperations;
+	private TC5_SalesReport TC5_SalesReport;
+	private TC7_AddProduct TC7_AddProduct;
+	private EditProduct EditProduct;
 	private static Properties properties;
 	private ScreenShot screenShot;
+	private ExternReport ExternReport;
 	
 	
 	@BeforeClass
@@ -46,10 +57,14 @@ public class TC3_ProductFilter {
 			driver = DriverFactory.getDriver(DriverNames.FIREFOX);
 			TC1_AdminLogin = new TC1_AdminLogin(driver); 
 			TC1_Dashboard = new TC1_Dashboard(driver); 
-			TC2_Categories =new TC2_Categories(driver);
 			TC3_Product =new TC3_Product(driver);
+			TC5_SalesReport=new TC5_SalesReport(driver);
+			TC6_ProductOperations =new TC6_ProductOperations(driver);
+			TC7_AddProduct=new TC7_AddProduct(driver);
+			EditProduct=new EditProduct(driver);
 			baseUrl = properties.getProperty("baseURL");
 			screenShot = new ScreenShot(driver); 
+			ExternReport =new ExternReport(driver);
 			// open the browser 
 			driver.get(baseUrl);
 		}
@@ -65,19 +80,35 @@ public class TC3_ProductFilter {
 		TC1_AdminLogin.sendUser("admin");
 		TC1_AdminLogin.sendPass("admin@123");
 		TC1_AdminLogin.clickAdminLoginBtn(); 
-		screenShot.captureScreenShot("TC6_1");
+		screenShot.captureScreenShot();
 		Thread.sleep(2000);
-		TC1_Dashboard.clickcatalog();
-		Thread.sleep(5000);
-		screenShot.captureScreenShot("TC3_2");
-		TC3_Product.clickproduct();
-		TC3_Product.enterProductName("Shirt");
-		TC3_Product.filterbutton();
-	    screenShot.captureScreenShot("TC3_3");
+		TC5_SalesReport.mainmenu();
+		System.out.println("Click on Product Menu");
+	   	TC6_ProductOperations.catalogmenu();
+		TC6_ProductOperations.productmenu();
+		screenShot.captureScreenShot();
+		EditProduct.editprodbutton();
+		TC7_AddProduct.clickdata();
+		EditProduct.clearquanity();
+		TC7_AddProduct.enterQuantity1("5000");
+		TC7_AddProduct.savebutton();
+		try
+		{
+		String actual=TC7_AddProduct.sucessmessage1();
+		System.out.println("Actual is   "+actual);
+		String Expected="Success:";
+		Assert.assertEquals(actual,Expected);
+		System.out.println("Test passed");
+	    screenShot.captureScreenShot();
+		}
+		catch(Error e)
+		{
+			System.out.println("Unable to update the record");
+		}
 		
-	}	
-		
+				}	
 	}
+
 
 	
 	

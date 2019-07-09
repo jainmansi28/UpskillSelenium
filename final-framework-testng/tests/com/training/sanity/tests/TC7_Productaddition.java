@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -13,23 +14,30 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.training.generics.ScreenShot;
+import com.relevantcodes.extentreports.LogStatus;
+import com.training.generics.ExternReport;
 import com.training.pom.TC1_AdminLogin;
 import com.training.pom.TC1_Dashboard;
-import com.training.pom.TC4_ProdDel;
+import com.training.pom.TC6_ProductOperations;
 import com.training.pom.TC3_Product;
+import com.training.pom.TC5_SalesReport;
+import com.training.pom.TC7_AddProduct;
 import com.training.utility.DriverFactory;
 import com.training.utility.DriverNames;
 
-public class TC4_ProductDeletion {
+public class TC7_Productaddition {
 	
 	private WebDriver driver;
 	private String baseUrl;
 	private TC1_AdminLogin TC1_AdminLogin;
 	private TC1_Dashboard TC1_Dashboard;
-	private TC4_ProdDel TC4_ProdDel;
 	private TC3_Product TC3_Product;
+	private TC6_ProductOperations TC6_ProductOperations;
+	private TC5_SalesReport TC5_SalesReport;
+	private TC7_AddProduct TC7_AddProduct;
 	private static Properties properties;
 	private ScreenShot screenShot;
+	private ExternReport ExternReport;
 	
 	
 	@BeforeClass
@@ -48,9 +56,12 @@ public class TC4_ProductDeletion {
 			TC1_AdminLogin = new TC1_AdminLogin(driver); 
 			TC1_Dashboard = new TC1_Dashboard(driver); 
 			TC3_Product =new TC3_Product(driver);
-			TC4_ProdDel =new TC4_ProdDel(driver);
+			TC5_SalesReport=new TC5_SalesReport(driver);
+			TC6_ProductOperations =new TC6_ProductOperations(driver);
+			TC7_AddProduct=new TC7_AddProduct(driver);
 			baseUrl = properties.getProperty("baseURL");
 			screenShot = new ScreenShot(driver); 
+			ExternReport =new ExternReport(driver);
 			// open the browser 
 			driver.get(baseUrl);
 		}
@@ -66,36 +77,42 @@ public class TC4_ProductDeletion {
 		TC1_AdminLogin.sendUser("admin");
 		TC1_AdminLogin.sendPass("admin@123");
 		TC1_AdminLogin.clickAdminLoginBtn(); 
-		screenShot.captureScreenShot("TC4_1");
-		TC1_Dashboard.clickcatalog();
-		TC3_Product.clickproduct();
-		String output=TC4_ProdDel.enterProductName("Shirts");
-		String expec="Matched";
-		Assert.assertEquals(output,expec);
-		System.out.println("Element found :Continue the deletion process");
-		screenShot.captureScreenShot("TC4_3");
+		screenShot.captureScreenShot();
+		Thread.sleep(2000);
+		TC5_SalesReport.mainmenu();
+		System.out.println("Click on Product Menu");
+	   	TC6_ProductOperations.catalogmenu();
+		TC6_ProductOperations.productmenu();
+		screenShot.captureScreenShot();
+		TC7_AddProduct.addprodbutton();
+		TC7_AddProduct.enterprodname("XYZ");
+		TC7_AddProduct.enterprodtitlename("Shirt for girls");
 		Thread.sleep(5000);
-		TC4_ProdDel.clickdelbutton();
-		screenShot.captureScreenShot("TC4_2");
-		TC4_ProdDel.alertwindow1();
-		Thread.sleep(5000);
+		TC7_AddProduct.clickdata();
+		TC7_AddProduct.enterModel1("SHG-010");
+		TC7_AddProduct.enterprice("5000");
+		TC7_AddProduct.enterQuantity1("150");
+		TC7_AddProduct.clicklink();
+		TC7_AddProduct.clickcategory();
+		TC7_AddProduct.addcategory();
+		TC7_AddProduct.savebutton();
 		try
 		{
-		String actual=TC4_ProdDel.sucessmessage1();
+		String actual=TC7_AddProduct.sucessmessage1();
 		System.out.println("Actual is   "+actual);
 		String Expected="Success:";
 		Assert.assertEquals(actual,Expected);
 		System.out.println("Test passed");
-	    screenShot.captureScreenShot("TC4_4");
+	    screenShot.captureScreenShot();
 		}
 		catch(Error e)
 		{
-			System.out.println("Unable to delete an entry");
+			System.out.println("Unable to update the record");
 		}
 		
 				}	
-		
 	}
+
 
 	
 	
